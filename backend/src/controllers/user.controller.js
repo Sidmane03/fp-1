@@ -35,9 +35,6 @@ const registerUser = asyncHandler(async (req, res) => {
   }
 });
 
-// @desc    Auth user & get token
-// @route   POST /api/users/login
-// @access  Public
 const authUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
@@ -58,4 +55,42 @@ const authUser = asyncHandler(async (req, res) => {
   }
 });
 
-export { registerUser, authUser };
+// --- Helper Function: Calculate BMI (Source: WHO Formula [2]) ---
+const calculateBMI = (weightKg, heightCm) => {
+  if (!weightKg || !heightCm) return null;
+  const heightM = heightCm / 100; // Convert cm to meters
+  return (weightKg / (heightM * heightM)).toFixed(1); // Formula: kg / m^2
+};
+
+// ... keep registerUser and authUser functions ...
+
+// @desc    Get user profile & Health Stats
+// @route   GET /api/users/profile
+// @access  Private
+const getUserProfile = asyncHandler(async (req, res) => {
+  // req.user is already provided by the 'protect' middleware
+  const user = await User.findById(req.user._id);
+
+  if (user) {
+    res.json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      // Return biometric data for the Dashboard
+      gender: user.gender,
+      age: user.age,
+      height: user.height,
+      weight: user.weight,
+      goal: user.goal,
+      activityLevel: user.activityLevel,
+      // Dynamic Calculation: Add BMI to the response immediately
+      bmi: calculateBMI(user.weight, user.height) 
+    });
+  } else {
+    res.status(404);
+    throw new Error('User not found');
+  }
+});
+
+// Update the export to include the new function
+export { registerUser, authUser, getUserProfile };
