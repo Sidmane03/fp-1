@@ -1,22 +1,14 @@
-import express from 'express';
-import dotenv from 'dotenv';
-import cors from 'cors'; // You need to install this: npm install cors
-import connectDB from './config/db.js'; // NOTE: The .js extension is REQUIRED here
+import app from "./app.js"; // <--- Import the app you configured in app.js
+import dotenv from "dotenv";
+import connectDB from "./config/db.js";
 
-// 1. Load Environment Variables
+// 1. Load config
 dotenv.config();
 
 // 2. Connect to Database
 connectDB();
 
-// 3. Initialize Express
-const app = express();
-
-// 4. Middleware
-app.use(cors());
-app.use(express.json());
-
-// 5. Start Server
+// 3. Start the Server
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {

@@ -4,8 +4,23 @@ import User from "./src/models/User.js";
 import connectDB from "./src/config/db.js";
 import "dotenv/config";
 
-// Connect to DB
-connectDB();
+// Connect to DB and Import Data
+const runSeed = async () => {
+  try {
+    await connectDB();
+
+    // Safeguard: Do not run in production unless explicitly allowed
+    if (process.env.NODE_ENV === 'production' && process.env.SEED_ALLOW !== 'true') {
+      console.error('❌ Error: Seeding is blocked in production environment. Set SEED_ALLOW=true to override.');
+      process.exit(1);
+    }
+
+    await importData();
+  } catch (error) {
+    console.error(`❌ Connection Error: ${error.message}`);
+    process.exit(1);
+  }
+};
 
 const importData = async () => {
   try {
@@ -14,9 +29,9 @@ const importData = async () => {
 
     // 2. Create a dummy user
     const user = new User({
-      name: 'Test User',
-      email: 'test@example.com',
-      password: 'password123', // This will be encrypted automatically by your User.js code!
+      name: 'Test User 3',
+      email: 'test3@example.com',
+      password: 'password321', // This will be encrypted automatically by your User.js code!
       role: 'user',
       gender: 'male',
       age: 25,
@@ -30,7 +45,7 @@ const importData = async () => {
     await user.save();
 
     console.log('✅ Data Imported Successfully!');
-    console.log('🔑 Password encrypted as:', user.password); // Verify encryption worked
+    // Removed sensitive password logging
     process.exit();
   } catch (error) {
     console.error(`❌ Error: ${error.message}`);
@@ -38,4 +53,4 @@ const importData = async () => {
   }
 };
 
-importData();
+runSeed();
