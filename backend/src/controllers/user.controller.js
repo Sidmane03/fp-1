@@ -1,96 +1,257 @@
-import asyncHandler from 'express-async-handler';
 import User from '../models/User.js';
 import generateToken from '../utils/generateToken.js';
+import asyncHandler from '../utils/asyncHandler.js';
 
-// @desc    Register a new user
+// ============================================================
+// HELPER: Fitness Plan Calculator (pure function, no DB)
+// ============================================================
+
+const ACTIVITY_MULTIPLIERS = {
+  sedentary: 1.2,
+  light: 1.375,
+  moderate: 1.55,
+  active: 1.725,
+  very_active: 1.9,
+};
+
+const CALS_PER_KG = 7700; // ~calories in 1 kg of body weight
+
+const calculatePlanLogic = ({ gender, weight, height, age, activityLevel, goal, targetWeight, timeframeWeeks }) => {
+  if (!gender || !weight || !height || !age || !activityLevel || !goal) {
+    const error = new Error(
+      'Missing required fields: gender, weight, height, age, activityLevel, goal'
+    );
+    error.statusCode = 400; // Add this
+    throw error;
+  }
+
+  // A. BMR — Mifflin-St Jeor
+  let bmr = 10 * weight + 6.25 * height - 5 * age;
+  bmr += gender === 'male' ? 5 : -161;
+
+  // B. TDEE
+  const tdee = bmr * (ACTIVITY_MULTIPLIERS[activityLevel] || 1.2);
+
+  // C. Target Calories — based on goal + timeframe
+  let targetCalories = tdee;
+  let dailyAdjustment = 0;
+
+  if (goal !== 'maintain' && targetWeight && timeframeWeeks) {
+    // Dynamic: user provided a target weight and timeframe
+    const weightDiff = Math.abs(targetWeight - weight);
+    const weeklyChange = weightDiff / timeframeWeeks;
+
+    // Safety cap: max 1 kg/week loss, max 1 kg/week gain
+    const safeWeeklyChange = Math.min(weeklyChange, 1);
+
+    dailyAdjustment = (safeWeeklyChange * CALS_PER_KG) / 7;
+
+    if (goal === 'lose_weight') {
+      targetCalories = tdee - dailyAdjustment;
+    } else if (goal === 'gain_muscle') {
+      targetCalories = tdee + dailyAdjustment;
+    }
+  } else if (goal === 'lose_weight') {
+    // Fallback: no timeframe provided, use standard deficit
+    targetCalories = tdee - 500;
+  } else if (goal === 'gain_muscle') {
+    targetCalories = tdee + 300;
+  }
+
+  // Safety floor
+  const minCalories = gender === 'male' ? 1500 : 1200;
+  targetCalories = Math.max(targetCalories, minCalories);
+
+  // D. Macros — 30% protein, 40% carbs, 30% fats
+  const macros = {
+    protein: Math.round((targetCalories * 0.3) / 4),
+    carbs: Math.round((targetCalories * 0.4) / 4),
+    fats: Math.round((targetCalories * 0.3) / 9),
+  };
+
+  return {
+    bmr: Math.round(bmr),
+    tdee: Math.round(tdee),
+    targetCalories: Math.round(targetCalories),
+    macros,
+  };
+};
+
+// ============================================================
+// HELPER: BMI Calculator
+// ============================================================
+
+const calculateBMI = (weightKg, heightCm) => {
+  if (!weightKg || !heightCm) return null;
+  const heightM = heightCm / 100;
+  return parseFloat((weightKg / (heightM * heightM)).toFixed(1));
+};
+
+// ============================================================
+// PUBLIC: Calculate Plan Preview (no auth, no save)
+// ============================================================
+
+// @desc    Calculate fitness plan without saving
+// @route   POST /api/users/calculate-plan
+// @access  Public
+const generateGuestPlan = asyncHandler(async (req, res) => {
+  const plan = calculatePlanLogic(req.body);
+  res.json({ success: true, data: plan });
+});
+
+// ============================================================
+// PUBLIC: Register User
+// ============================================================
+
+// @desc    Register user + calculate & save fitnessProfile
 // @route   POST /api/users/register
 // @access  Public
 const registerUser = asyncHandler(async (req, res) => {
-  const { name, email, password, gender, age, height, weight, activityLevel, goal } = req.body;
+  const {
+    name,
+    email,
+    password,
+    gender,
+    age,
+    height,
+    weight,
+    activityLevel,
+    goal,
+    targetWeight,
+    timeframeWeeks,
+  } = req.body;
 
-  const userExists = await User.findOne({ email });
-
-  if (userExists) {
+  // --- Validate ALL required fields upfront ---
+  if (!name || !email || !password) {
     res.status(400);
+    throw new Error('Please provide name, email, and password');
+  }
+
+  if (!gender || !age || !height || !weight || !activityLevel || !goal) {
+    res.status(400);
+    throw new Error(
+      'Please complete onboarding first: gender, age, height, weight, activityLevel, and goal are required'
+    );
+  }
+
+  // Check if user exists
+  const userExists = await User.findOne({ email });
+  if (userExists) {
+    res.status(409);
     throw new Error('User already exists');
   }
 
-  const user = await User.create({
-    name, email, password, gender, age, height, weight, activityLevel, goal
+  // Calculate fitness profile
+  const fitnessProfile = calculatePlanLogic({
+    gender,
+    weight,
+    height,
+    age,
+    activityLevel,
+    goal,
+    targetWeight,
+    timeframeWeeks,
   });
 
-  if (user) {
-    // We generate the token here using our new utility
-    const token = generateToken(res, user._id);
-    
-    res.status(201).json({
+  // Create user with fitnessProfile in one operation
+  const user = await User.create({
+    name,
+    email,
+    password,
+    gender,
+    age,
+    height,
+    weight,
+    activityLevel,
+    goal,
+    targetWeight,
+    timeframeWeeks,
+    fitnessProfile,
+  });
+
+  const token = generateToken(user._id);
+
+  res.status(201).json({
+    success: true,
+    data: {
       _id: user._id,
       name: user.name,
       email: user.email,
-      token: token 
-    });
-  } else {
-    res.status(400);
-    throw new Error('Invalid user data');
-  }
+      fitnessProfile: user.fitnessProfile,
+      token,
+    },
+  });
 });
 
+// ============================================================
+// PUBLIC: Login
+// ============================================================
+
+// @desc    Authenticate user & return token
+// @route   POST /api/users/login
+// @access  Public
 const authUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
-  const user = await User.findOne({ email });
+  if (!email || !password) {
+    res.status(400);
+    throw new Error('Please provide email and password');
+  }
 
-  if (user && (await user.matchPassword(password))) {
-    const token = generateToken(res, user._id);
-    
-    res.json({
-      _id: user._id,
-      name: user.name,
-      email: user.email,
-      token: token
-    });
-  } else {
+  // Explicitly select password since it's hidden by default
+  const user = await User.findOne({ email }).select('+password');
+
+  if (!user || !(await user.matchPassword(password))) {
     res.status(401);
     throw new Error('Invalid email or password');
   }
-});
 
-// --- Helper Function: Calculate BMI (Source: WHO Formula [2]) ---
-const calculateBMI = (weightKg, heightCm) => {
-  if (!weightKg || !heightCm) return null;
-  const heightM = heightCm / 100; // Convert cm to meters
-  return (weightKg / (heightM * heightM)).toFixed(1); // Formula: kg / m^2
-};
+  const token = generateToken(user._id);
 
-// ... keep registerUser and authUser functions ...
-
-// @desc    Get user profile & Health Stats
-// @route   GET /api/users/profile
-// @access  Private
-const getUserProfile = asyncHandler(async (req, res) => {
-  // req.user is already provided by the 'protect' middleware
-  const user = await User.findById(req.user._id);
-
-  if (user) {
-    res.json({
+  res.json({
+    success: true,
+    data: {
       _id: user._id,
       name: user.name,
       email: user.email,
-      // Return biometric data for the Dashboard
+      token,
+    },
+  });
+});
+
+// ============================================================
+// PRIVATE: Get User Profile
+// ============================================================
+
+// @desc    Get logged-in user's profile + health stats
+// @route   GET /api/users/profile
+// @access  Private
+const getUserProfile = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user._id);
+
+  if (!user) {
+    res.status(404);
+    throw new Error('User not found');
+  }
+
+  res.json({
+    success: true,
+    data: {
+      _id: user._id,
+      name: user.name,
+      email: user.email,
       gender: user.gender,
       age: user.age,
       height: user.height,
       weight: user.weight,
       goal: user.goal,
       activityLevel: user.activityLevel,
-      // Dynamic Calculation: Add BMI to the response immediately
-      bmi: calculateBMI(user.weight, user.height) 
-    });
-  } else {
-    res.status(404);
-    throw new Error('User not found');
-  }
+      targetWeight: user.targetWeight,
+      timeframeWeeks: user.timeframeWeeks,
+      fitnessProfile: user.fitnessProfile,
+      bmi: calculateBMI(user.weight, user.height),
+    },
+  });
 });
 
-// Update the export to include the new function
-export { registerUser, authUser, getUserProfile };
+export { registerUser, authUser, getUserProfile, generateGuestPlan };

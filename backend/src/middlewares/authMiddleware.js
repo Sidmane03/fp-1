@@ -1,36 +1,36 @@
 import jwt from 'jsonwebtoken';
-import asyncHandler from 'express-async-handler';
 import User from '../models/User.js';
+import asyncHandler from '../utils/asyncHandler.js';
 
 const protect = asyncHandler(async (req, res, next) => {
-  let token;
+  const authHeader = req.headers.authorization;
 
-  // 1. Check if the "Authorization" header exists and starts with "Bearer"
-  if (
-    req.headers.authorization &&
-    req.headers.authorization.startsWith('Bearer')
-  ) {
-    try {
-      // 2. Get the token string (remove "Bearer " from the string)
-      token = req.headers.authorization.split(' ')[1];
-
-      // 3. Decode the token to get the User ID
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-      // 4. Find the user in DB, but DO NOT return the password
-      req.user = await User.findById(decoded.userId).select('-password');
-
-      next(); // Pass the baton to the next controller (getUserProfile)
-    } catch (error) {
-      console.error(error);
-      res.status(401);
-      throw new Error('Not authorized, token failed');
-    }
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    res.status(401);
+    throw new Error('Not authorized, no token provided');
   }
 
-  if (!token) {
+  const token = authHeader.split(' ')[1];
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await User.findById(decoded.userId);
+
+    if (!user) {
+      res.status(401);
+      throw new Error('Not authorized, user no longer exists');
+    }
+
+    req.user = user;
+    next();
+  } catch (error) {
     res.status(401);
-    throw new Error('Not authorized, no token');
+
+    if (error.name === 'TokenExpiredError') {
+      throw new Error('Not authorized, token has expired');
+    }
+
+    throw new Error(error.message || 'Not authorized, token is invalid');
   }
 });
 

@@ -1,13 +1,20 @@
 import express from 'express';
-import { registerUser, authUser, getUserProfile } from '../controllers/user.controller.js';
-import { protect } from '../middlewares/authMiddleware.js'; // Import the guard
+import {
+  registerUser,
+  authUser,
+  getUserProfile,
+  generateGuestPlan,
+} from '../controllers/user.controller.js';
+import { protect } from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
 
+// --- Public Routes ---
 router.post('/register', registerUser);
 router.post('/login', authUser);
+router.post('/calculate-plan', generateGuestPlan);
 
-// This route is PROTECTED. The user must show a token to pass 'protect'.
+// --- Protected Routes ---
 router.get('/profile', protect, getUserProfile);
 
 export default router;
