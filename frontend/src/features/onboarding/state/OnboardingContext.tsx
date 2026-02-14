@@ -20,6 +20,7 @@ const initialData: OnboardingData = {
   activityLevel: "moderate",
   targetWeight: "",
   timeframeWeeks: "",
+  weeklyRate: "0.8",       // NEW: default recommended pace
 };
 
 const OnboardingContext = createContext<OnboardingContextType | undefined>(

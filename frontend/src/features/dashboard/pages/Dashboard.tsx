@@ -116,7 +116,7 @@ export default function Dashboard() {
           <div className="bg-gray-900 border-2 border-gray-700 rounded-xl p-5 text-center">
             <p className="text-sm text-gray-400">Daily Calories</p>
             <p className="text-3xl font-bold text-blue-400">
-              {fp.targetCalories}
+              {fp?.targetCalories}
             </p>
             <p className="text-xs text-gray-500">kcal</p>
           </div>

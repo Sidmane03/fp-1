@@ -5,7 +5,7 @@ import {
   getUserProfile,
   generateGuestPlan,
 } from '../controllers/user.controller.js';
-import { protect } from '../middlewares/authMiddleware.js';
+import { protect } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 

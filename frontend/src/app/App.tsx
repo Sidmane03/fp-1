@@ -16,6 +16,7 @@ import GenderStep from "../features/onboarding/components/GenderStep";
 import BiometricsStep from "../features/onboarding/components/BiometricsStep";
 import GoalStep from "../features/onboarding/components/Goalstep";
 import ActivityStep from "../features/onboarding/components/ActivityStep";
+import PaceStep from "../features/onboarding/components/PaceStep";
 import PlanReveal from "../features/onboarding/components/PlanReveal";
 
 // Feature: Dashboard
@@ -51,6 +52,9 @@ function App() {
             <Route path="/onboarding/gender" element={<GenderStep />} />
             <Route path="/onboarding/biometrics" element={<BiometricsStep />} />
             <Route path="/onboarding/goal" element={<GoalStep />} />
+            <Route path="/onboarding/goal" element={<GoalStep />} />
+            <Route path="/onboarding/pace" element={<PaceStep />} />    {/* NEW */}
+            <Route path="/onboarding/activity" element={<ActivityStep />} />
             <Route path="/onboarding/activity" element={<ActivityStep />} />
             <Route path="/onboarding/reveal" element={<PlanReveal />} />
 

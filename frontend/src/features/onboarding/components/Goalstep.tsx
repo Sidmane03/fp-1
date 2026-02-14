@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useOnboarding } from "../state/OnboardingContext";
 
@@ -11,30 +10,11 @@ const goalOptions = [
 export default function GoalStep() {
   const { data, updateData } = useOnboarding();
   const navigate = useNavigate();
-  const [errors, setErrors] = useState<Record<string, string>>({});
-
-  const showTimeframe = data.goal !== "maintain";
-
-  const validate = (): boolean => {
-    const newErrors: Record<string, string> = {};
-
-    if (showTimeframe) {
-      const tw = Number(data.targetWeight);
-      const tf = Number(data.timeframeWeeks);
-
-      if (!data.targetWeight || tw < 20 || tw > 500)
-        newErrors.targetWeight = "Enter a valid target weight (20–500 kg)";
-      if (!data.timeframeWeeks || tf < 1 || tf > 52)
-        newErrors.timeframeWeeks = "Timeframe must be 1–52 weeks";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleNext = () => {
-    if (validate()) {
+   const handleNext = () => {
+    if (data.goal === "maintain") {
       navigate("/onboarding/activity");
+    } else {
+      navigate("/onboarding/pace");
     }
   };
 
@@ -46,7 +26,6 @@ export default function GoalStep() {
           <p className="mt-2 text-gray-400">We'll tailor your plan to match</p>
         </div>
 
-        {/* Goal Selection */}
         <div className="space-y-3">
           {goalOptions.map((option) => (
             <button
@@ -54,7 +33,7 @@ export default function GoalStep() {
               onClick={() => {
                 updateData({ goal: option.value });
                 if (option.value === "maintain") {
-                  updateData({ targetWeight: "", timeframeWeeks: "" });
+                  updateData({ targetWeight: "", timeframeWeeks: "", weeklyRate: "" });
                 }
               }}
               className={`w-full flex items-center gap-4 p-4 rounded-xl border-2 transition-all
@@ -72,43 +51,6 @@ export default function GoalStep() {
             </button>
           ))}
         </div>
-
-        {/* Timeframe Fields (only for lose/gain) */}
-        {showTimeframe && (
-          <div className="space-y-4 pt-2">
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1">
-                Target weight (kg)
-              </label>
-              <input
-                type="number"
-                value={data.targetWeight}
-                onChange={(e) => updateData({ targetWeight: e.target.value })}
-                placeholder={data.goal === "lose_weight" ? "e.g. 65" : "e.g. 80"}
-                className="w-full p-3 rounded-xl bg-gray-900 border-2 border-gray-700 text-white placeholder-gray-500 focus:border-blue-500 focus:outline-none"
-              />
-              {errors.targetWeight && (
-                <p className="mt-1 text-sm text-red-400">{errors.targetWeight}</p>
-              )}
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1">
-                In how many weeks?
-              </label>
-              <input
-                type="number"
-                value={data.timeframeWeeks}
-                onChange={(e) => updateData({ timeframeWeeks: e.target.value })}
-                placeholder="e.g. 12"
-                className="w-full p-3 rounded-xl bg-gray-900 border-2 border-gray-700 text-white placeholder-gray-500 focus:border-blue-500 focus:outline-none"
-              />
-              {errors.timeframeWeeks && (
-                <p className="mt-1 text-sm text-red-400">{errors.timeframeWeeks}</p>
-              )}
-            </div>
-          </div>
-        )}
 
         <div className="flex gap-3">
           <button

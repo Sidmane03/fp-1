@@ -3,7 +3,7 @@ import generateToken from '../utils/generateToken.js';
 import asyncHandler from '../utils/asyncHandler.js';
 
 // ============================================================
-// HELPER: Fitness Plan Calculator (pure function, no DB)
+// CONFIG
 // ============================================================
 
 const ACTIVITY_MULTIPLIERS = {
@@ -14,60 +14,115 @@ const ACTIVITY_MULTIPLIERS = {
   very_active: 1.9,
 };
 
-const CALS_PER_KG = 7700; // ~calories in 1 kg of body weight
+const CALS_PER_KG = 7700;
 
-const calculatePlanLogic = ({ gender, weight, height, age, activityLevel, goal, targetWeight, timeframeWeeks }) => {
+const SAFETY = {
+  maxWeeklyLoss: 1,        // kg per week
+  maxWeeklyGain: 0.5,      // kg per week (safer bulk)
+  maxGainSurplus: 500,     // max kcal surplus per day
+  fallbackDeficit: 500,
+  fallbackSurplus: 300,
+  minCalories: {
+    male: 1500,
+    female: 1200,
+  },
+};
+
+const MACRO_CONFIG = {
+  protein: {
+    lose_weight: 2.2,
+    gain_muscle: 2.0,
+    maintain: 1.8,
+  },
+  fats: {
+    lose_weight: 0.8,
+    gain_muscle: 1.0,
+    maintain: 0.9,
+  },
+};
+
+
+// ============================================================
+// CONFIG: All tunable constants in one place
+// ============================================================
+// 🔧 TEAM: Edit these values to adjust the plan logic globally.
+//    No need to touch the formulas below.
+const calculatePlanLogic = ({
+  gender,
+  weight,
+  height,
+  age,
+  activityLevel,
+  goal,
+  targetWeight,
+  timeframeWeeks,
+}) => {
   if (!gender || !weight || !height || !age || !activityLevel || !goal) {
     const error = new Error(
       'Missing required fields: gender, weight, height, age, activityLevel, goal'
     );
-    error.statusCode = 400; // Add this
+    error.statusCode = 400;
     throw error;
   }
 
-  // A. BMR — Mifflin-St Jeor
+  if (targetWeight) {
+    if (goal === 'lose_weight' && targetWeight >= weight) {
+      const error = new Error(
+        'Target weight must be less than current weight for a weight loss goal'
+      );
+      error.statusCode = 400;
+      throw error;
+    }
+    if (goal === 'gain_muscle' && targetWeight <= weight) {
+      const error = new Error(
+        'Target weight must be greater than current weight for a muscle gain goal'
+      );
+      error.statusCode = 400;
+      throw error;
+    }
+  }
+
   let bmr = 10 * weight + 6.25 * height - 5 * age;
   bmr += gender === 'male' ? 5 : -161;
 
   // B. TDEE
   const tdee = bmr * (ACTIVITY_MULTIPLIERS[activityLevel] || 1.2);
 
-  // C. Target Calories — based on goal + timeframe
   let targetCalories = tdee;
-  let dailyAdjustment = 0;
 
   if (goal !== 'maintain' && targetWeight && timeframeWeeks) {
-    // Dynamic: user provided a target weight and timeframe
     const weightDiff = Math.abs(targetWeight - weight);
-    const weeklyChange = weightDiff / timeframeWeeks;
-
-    // Safety cap: max 1 kg/week loss, max 1 kg/week gain
-    const safeWeeklyChange = Math.min(weeklyChange, 1);
-
-    dailyAdjustment = (safeWeeklyChange * CALS_PER_KG) / 7;
+    const rawWeeklyChange = weightDiff / timeframeWeeks;
 
     if (goal === 'lose_weight') {
-      targetCalories = tdee - dailyAdjustment;
+      const safeWeeklyLoss = Math.min(rawWeeklyChange, SAFETY.maxWeeklyLoss);
+      const dailyDeficit = (safeWeeklyLoss * CALS_PER_KG) / 7;
+      targetCalories = tdee - dailyDeficit;
     } else if (goal === 'gain_muscle') {
-      targetCalories = tdee + dailyAdjustment;
+      const safeWeeklyGain = Math.min(rawWeeklyChange, SAFETY.maxWeeklyGain);
+      let dailySurplus = (safeWeeklyGain * CALS_PER_KG) / 7;
+      dailySurplus = Math.min(dailySurplus, SAFETY.maxGainSurplus);
+      targetCalories = tdee + dailySurplus;
     }
   } else if (goal === 'lose_weight') {
-    // Fallback: no timeframe provided, use standard deficit
-    targetCalories = tdee - 500;
+    targetCalories = tdee - SAFETY.fallbackDeficit;
   } else if (goal === 'gain_muscle') {
-    targetCalories = tdee + 300;
+    targetCalories = tdee + SAFETY.fallbackSurplus;
   }
 
-  // Safety floor
-  const minCalories = gender === 'male' ? 1500 : 1200;
-  targetCalories = Math.max(targetCalories, minCalories);
+  const minCal = gender === 'male'
+    ? SAFETY.minCalories.male
+    : SAFETY.minCalories.female;
+  targetCalories = Math.max(targetCalories, minCal);
 
-  // D. Macros — 30% protein, 40% carbs, 30% fats
-  const macros = {
-    protein: Math.round((targetCalories * 0.3) / 4),
-    carbs: Math.round((targetCalories * 0.4) / 4),
-    fats: Math.round((targetCalories * 0.3) / 9),
-  };
+  const proteinGrams = Math.round(weight * MACRO_CONFIG.protein[goal]);
+  const fatGrams = Math.round(weight * MACRO_CONFIG.fats[goal]);
+  const proteinCalories = proteinGrams * 4;
+  const fatCalories = fatGrams * 9;
+  const remainingCalories = Math.max(targetCalories - proteinCalories - fatCalories, 0);
+  const carbGrams = Math.round(remainingCalories / 4);
+
+  const macros = { protein: proteinGrams, carbs: carbGrams, fats: fatGrams };
 
   return {
     bmr: Math.round(bmr),
@@ -86,7 +141,6 @@ const calculateBMI = (weightKg, heightCm) => {
   const heightM = heightCm / 100;
   return parseFloat((weightKg / (heightM * heightM)).toFixed(1));
 };
-
 // ============================================================
 // PUBLIC: Calculate Plan Preview (no auth, no save)
 // ============================================================

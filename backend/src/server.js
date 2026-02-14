@@ -4,7 +4,7 @@ import cors from 'cors';
 import morgan from 'morgan';
 import { connectDB, disconnectDB } from './config/db.js';
 import userRoutes from './routes/user.routes.js';
-import { notFound, errorHandler } from './middlewares/errorMiddleware.js';
+import { notFound, errorHandler } from './middleware/errorMiddleware.js';
 
 // --- Load env vars FIRST ---
 dotenv.config();
@@ -19,7 +19,9 @@ if (process.env.NODE_ENV !== 'production') {
 
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || '*',
+    origin: process.env.CLIENT_URL
+      ? process.env.CLIENT_URL.split(',')
+      : '*',
     credentials: true,
   })
 );

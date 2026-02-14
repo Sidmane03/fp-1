@@ -19,3 +19,14 @@ export interface PlanPreview {
     fats: number;
   };
 }
+export interface OnboardingData {
+  gender: "male" | "female" | "other";
+  age: string;
+  height: string;
+  weight: string;
+  goal: "lose_weight" | "maintain" | "gain_muscle";
+  activityLevel: "sedentary" | "light" | "moderate" | "active" | "very_active";
+  targetWeight: string;
+  timeframeWeeks: string;
+  weeklyRate: string;       // NEW: kg per week from slider
+}
