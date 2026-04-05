@@ -46,17 +46,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const login = async (credentials: LoginCredentials) => {
     const userData = await authApi.login(credentials);
+    tokenStorage.set(userData.token);
     setUser(userData);
   };
 
-  // Register → auto-login (token stored inside authApi.register)
   const register = async (data: RegisterData) => {
     const userData = await authApi.register(data);
+    tokenStorage.set(userData.token);
     setUser(userData);
   };
 
   const logout = () => {
-    authApi.logout();
+    tokenStorage.clear();
     setUser(null);
   };
 

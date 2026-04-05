@@ -69,7 +69,7 @@ const userSchema = new mongoose.Schema(
       },
     },
     targetWeight: { type: Number }, // kg — desired weight
-    timeframeWeeks: { type: Number, min: 1, max: 52 }, // how many weeks
+    timeframeWeeks: { type: Number, min: 1, max: 104 }, // how many weeks
 
     // Calculated Plan
     fitnessProfile: { type: fitnessProfileSchema, default: () => ({}) },

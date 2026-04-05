@@ -1,20 +1,15 @@
 import { api } from "../../../lib/axios";
-import { tokenStorage } from "../../../lib/storage";
 import type { LoginCredentials, RegisterData, User } from "../types";
 
 export const authApi = {
   async login(credentials: LoginCredentials): Promise<User> {
     const { data: res } = await api.post("/api/users/login", credentials);
-    const user = res.data;
-    tokenStorage.set(user.token);
-    return user;
+    return res.data;
   },
 
   async register(payload: RegisterData): Promise<User> {
     const { data: res } = await api.post("/api/users/register", payload);
-    const user = res.data;
-    tokenStorage.set(user.token);
-    return user;
+    return res.data;
   },
 
   async getProfile(): Promise<User> {
@@ -23,6 +18,6 @@ export const authApi = {
   },
 
   logout() {
-    tokenStorage.clear();
+    // Token clearing is handled by AuthContext
   },
 };

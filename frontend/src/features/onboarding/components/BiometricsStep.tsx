@@ -14,8 +14,8 @@ export default function BiometricsStep() {
     const weight = Number(data.weight);
 
     if (!data.age || age < 13 || age > 120) newErrors.age = "Age must be 13–120";
-    if (!data.height || height < 50 || height > 300) newErrors.height = "Height must be 50–300 cm";
-    if (!data.weight || weight < 20 || weight > 500) newErrors.weight = "Weight must be 20–500 kg";
+    if (!data.height || height < 100 || height > 210) newErrors.height = "This seems unusual. Please check your height";
+    if (!data.weight || weight < 25 || weight > 350) newErrors.weight = "This seems unusual. Please check your weight";
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -28,68 +28,100 @@ export default function BiometricsStep() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-950 p-4">
-      <div className="w-full max-w-md space-y-8">
-        <div className="text-center">
-          <h1 className="text-3xl font-bold text-white">Your body metrics</h1>
-          <p className="mt-2 text-gray-400">We need these for accurate calculations</p>
+    <div className="min-h-screen flex items-center justify-center bg-[#F8F7F3] p-4 font-sans text-[#1A1A1A]">
+      <div className="w-full max-w-md space-y-10 py-8">
+        
+        {/* Top Header & Segmented Progress Bar */}
+        <div className="flex items-center gap-4 px-2">
+          {/* Soft round Back Button */}
+          <button 
+            onClick={() => navigate("/onboarding/gender")}
+            className="flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-full bg-white shadow-[0_2px_10px_rgb(0,0,0,0.04)] text-gray-500 hover:text-[#1A1A1A] transition-colors focus:outline-none focus:ring-2 focus:ring-[#FF5722]"
+            aria-label="Go back"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M15 18l-6-6 6-6"/>
+            </svg>
+          </button>
+          
+          {/* Segmented Stepper */}
+          <div className="flex-1 flex gap-2">
+            <div className="h-1.5 flex-1 rounded-full bg-[#FF8A00]"></div> {/* Step 1 completed */}
+            <div className="h-1.5 flex-1 rounded-full bg-[#FF8A00]"></div> {/* Step 2 current */}
+            <div className="h-1.5 flex-1 rounded-full bg-gray-200"></div>   {/* Step 3 */}
+            <div className="h-1.5 flex-1 rounded-full bg-gray-200"></div>   {/* Step 4 */}
+          </div>
+          
+          <span className="text-sm font-medium text-gray-400">Skip</span>
         </div>
 
-        <div className="space-y-4">
-          {/* Age */}
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">Age</label>
+        {/* Title */}
+        <div className="text-center">
+          <h1 className="text-3xl font-bold font-serif text-[#1A1A1A]">Your body metrics</h1>
+          <p className="mt-2 text-gray-400 font-medium">We need these for accurate calculations</p>
+        </div>
+
+        {/* Floating Input Cards */}
+        <div className="space-y-4 px-2">
+          {/* Age Input Card */}
+          <div className="bg-white p-5 rounded-[20px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100/50">
+            <label htmlFor="age" className="block text-sm font-bold text-[#1A1A1A] mb-2">Age</label>
             <input
+              id="age"
               type="number"
               value={data.age}
               onChange={(e) => updateData({ age: e.target.value })}
               placeholder="e.g. 25"
-              className="w-full p-3 rounded-xl bg-gray-900 border-2 border-gray-700 text-white placeholder-gray-500 focus:border-blue-500 focus:outline-none"
+              className="w-full py-3 px-4 rounded-xl bg-[#F8F7F3] border border-transparent text-[#1A1A1A] placeholder-gray-400 font-bold focus:bg-white focus:border-[#FF5722] focus:ring-4 focus:ring-[#FF5722]/10 transition-all outline-none"
             />
-            {errors.age && <p className="mt-1 text-sm text-red-400">{errors.age}</p>}
+            {errors.age && <p className="mt-2 text-sm font-medium text-red-500">{errors.age}</p>}
           </div>
 
-          {/* Height */}
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">Height (cm)</label>
-            <input
-              type="number"
-              value={data.height}
-              onChange={(e) => updateData({ height: e.target.value })}
-              placeholder="e.g. 175"
-              className="w-full p-3 rounded-xl bg-gray-900 border-2 border-gray-700 text-white placeholder-gray-500 focus:border-blue-500 focus:outline-none"
-            />
-            {errors.height && <p className="mt-1 text-sm text-red-400">{errors.height}</p>}
+          {/* Height Input Card */}
+          <div className="bg-white p-5 rounded-[20px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100/50 flex items-center justify-between gap-4">
+            <div className="flex-1">
+              <label htmlFor="height" className="block text-sm font-bold text-[#1A1A1A] mb-2">Height</label>
+              <input
+                id="height"
+                type="number"
+                value={data.height}
+                onChange={(e) => updateData({ height: e.target.value })}
+                placeholder="e.g. 175"
+                className="w-full py-3 px-4 rounded-xl bg-[#F8F7F3] border border-transparent text-[#1A1A1A] placeholder-gray-400 font-bold focus:bg-white focus:border-[#FF5722] focus:ring-4 focus:ring-[#FF5722]/10 transition-all outline-none"
+              />
+              {errors.height && <p className="mt-2 text-sm font-medium text-red-500">{errors.height}</p>}
+            </div>
+            <span className="font-bold text-gray-300 self-end mb-4 pr-2">cm</span>
           </div>
 
-          {/* Weight */}
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">Weight (kg)</label>
-            <input
-              type="number"
-              value={data.weight}
-              onChange={(e) => updateData({ weight: e.target.value })}
-              placeholder="e.g. 70"
-              className="w-full p-3 rounded-xl bg-gray-900 border-2 border-gray-700 text-white placeholder-gray-500 focus:border-blue-500 focus:outline-none"
-            />
-            {errors.weight && <p className="mt-1 text-sm text-red-400">{errors.weight}</p>}
+          {/* Weight Input Card */}
+          <div className="bg-white p-5 rounded-[20px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100/50 flex items-center justify-between gap-4">
+            <div className="flex-1">
+              <label htmlFor="weight" className="block text-sm font-bold text-[#1A1A1A] mb-2">Weight</label>
+              <input
+                id="weight"
+                type="number"
+                value={data.weight}
+                onChange={(e) => updateData({ weight: e.target.value })}
+                placeholder="e.g. 70"
+                className="w-full py-3 px-4 rounded-xl bg-[#F8F7F3] border border-transparent text-[#1A1A1A] placeholder-gray-400 font-bold focus:bg-white focus:border-[#FF5722] focus:ring-4 focus:ring-[#FF5722]/10 transition-all outline-none"
+              />
+              {errors.weight && <p className="mt-2 text-sm font-medium text-red-500">{errors.weight}</p>}
+            </div>
+            <span className="font-bold text-gray-300 self-end mb-4 pr-2">kg</span>
           </div>
         </div>
 
-        <div className="flex gap-3">
-          <button
-            onClick={() => navigate("/onboarding/gender")}
-            className="flex-1 py-3 rounded-xl border-2 border-gray-700 text-gray-300 font-semibold hover:border-gray-500 transition-colors"
-          >
-            Back
-          </button>
+        {/* Bottom Actions */}
+        <div className="pt-4 px-2">
           <button
             onClick={handleNext}
-            className="flex-1 py-3 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-700 transition-colors"
+            className="w-full py-4 rounded-full bg-gradient-to-r from-[#FF8A00] to-[#FF5722] text-white font-bold text-lg shadow-[0_8px_20px_rgb(255,87,34,0.3)] hover:shadow-[0_12px_25px_rgb(255,87,34,0.4)] hover:-translate-y-0.5 transition-all outline-none focus:ring-4 focus:ring-[#FF8A00]/50"
           >
             Next
           </button>
         </div>
+
       </div>
     </div>
   );

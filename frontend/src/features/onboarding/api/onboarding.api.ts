@@ -14,6 +14,7 @@ export const onboardingApi = {
       timeframeWeeks: data.timeframeWeeks
         ? Number(data.timeframeWeeks)
         : undefined,
+      weeklyRate: data.weeklyRate ? Number(data.weeklyRate) : undefined,
     };
 
     const { data: res } = await api.post("/api/users/calculate-plan", payload);

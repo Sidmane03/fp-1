@@ -1,35 +1,43 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, Navigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
 import { useAuth } from "../state/AuthContext";
 import { useOnboarding } from "../../onboarding/state/OnboardingContext";
 
+// Define the shape of our form data for TypeScript
+type FormValues = {
+  name: string;
+  email: string;
+  password: string;
+};
+
 export default function Register() {
   const { data, planRevealed } = useOnboarding();
-  const { register } = useAuth();
+  // Alias register to authRegister to prevent naming collision with react-hook-form
+  const { register: authRegister } = useAuth(); 
   const navigate = useNavigate();
-
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [authError, setAuthError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
 
-  // Guard: if user hasn't completed onboarding, send them back
+  // Initialize React Hook Form
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormValues>();
+
   if (!planRevealed) {
-    navigate("/onboarding/gender", { replace: true });
-    return null;
+    return <Navigate to="/onboarding/gender" replace />;
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
+  // RHF passes the validated data to this function
+  const onSubmit = async (formData: FormValues) => {
+    setAuthError("");
     setLoading(true);
 
     try {
-      await register({
-        name,
-        email,
-        password,
+      await authRegister({
+        ...formData, // Spread the validated name, email, and password
         gender: data.gender,
         age: Number(data.age),
         height: Number(data.height),
@@ -37,14 +45,16 @@ export default function Register() {
         goal: data.goal,
         activityLevel: data.activityLevel,
         targetWeight: data.targetWeight ? Number(data.targetWeight) : undefined,
-        timeframeWeeks: data.timeframeWeeks
-          ? Number(data.timeframeWeeks)
-          : undefined,
+        timeframeWeeks: data.timeframeWeeks ? Number(data.timeframeWeeks) : undefined,
       });
 
       navigate("/dashboard");
-    } catch (err: any) {
-      setError(err.message || "Failed to register");
+    } catch (err) {
+      if (err instanceof Error) {
+        setAuthError(err.message);
+      } else {
+        setAuthError("An unexpected error occurred during registration.");
+      }
     } finally {
       setLoading(false);
     }
@@ -58,45 +68,66 @@ export default function Register() {
           <p className="mt-2 text-gray-400">To save your personalized plan</p>
         </div>
 
-        {error && (
-          <div className="rounded-xl bg-red-500/10 border border-red-500/30 p-3 text-sm text-red-400 text-center">
-            {error}
+        {authError && (
+          <div className="rounded-xl bg-red-500/10 border border-red-500/30 p-3 text-sm text-red-400 text-center" role="alert">
+            {authError}
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        {/* Use RHF's handleSubmit to wrap your custom onSubmit */}
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div>
+            <label htmlFor="name" className="sr-only">Full Name</label>
             <input
+              id="name"
               type="text"
-              required
               placeholder="Full Name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="w-full p-3 rounded-xl bg-gray-900 border-2 border-gray-700 text-white placeholder-gray-500 focus:border-blue-500 focus:outline-none"
+              className={`w-full p-3 rounded-xl bg-gray-900 border-2 text-white placeholder-gray-500 focus:outline-none ${
+                errors.name ? "border-red-500" : "border-gray-700 focus:border-blue-500"
+              }`}
+              {...register("name", { required: "Name is required" })}
             />
+            {errors.name && <p className="mt-1 text-sm text-red-400">{errors.name.message}</p>}
           </div>
 
           <div>
+            <label htmlFor="email" className="sr-only">Email address</label>
             <input
+              id="email"
               type="email"
-              required
               placeholder="Email address"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full p-3 rounded-xl bg-gray-900 border-2 border-gray-700 text-white placeholder-gray-500 focus:border-blue-500 focus:outline-none"
+              className={`w-full p-3 rounded-xl bg-gray-900 border-2 text-white placeholder-gray-500 focus:outline-none ${
+                errors.email ? "border-red-500" : "border-gray-700 focus:border-blue-500"
+              }`}
+              {...register("email", { 
+                required: "Email is required",
+                pattern: {
+                  value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                  message: "Please enter a valid email address (e.g., name@example.com)"
+                }
+              })}
             />
+            {errors.email && <p className="mt-1 text-sm text-red-400">{errors.email.message}</p>}
           </div>
 
           <div>
+            <label htmlFor="password" className="sr-only">Password</label>
             <input
+              id="password"
               type="password"
-              required
-              minLength={6}
               placeholder="Password (min 6 characters)"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full p-3 rounded-xl bg-gray-900 border-2 border-gray-700 text-white placeholder-gray-500 focus:border-blue-500 focus:outline-none"
+              className={`w-full p-3 rounded-xl bg-gray-900 border-2 text-white placeholder-gray-500 focus:outline-none ${
+                errors.password ? "border-red-500" : "border-gray-700 focus:border-blue-500"
+              }`}
+              {...register("password", { 
+                required: "Password is required",
+                minLength: {
+                  value: 6,
+                  message: "Password must be at least 6 characters"
+                }
+              })}
             />
+            {errors.password && <p className="mt-1 text-sm text-red-400">{errors.password.message}</p>}
           </div>
 
           <button
@@ -110,10 +141,7 @@ export default function Register() {
 
         <div className="text-center text-sm">
           <span className="text-gray-500">Already have an account? </span>
-          <Link
-            to="/login"
-            className="font-medium text-blue-400 hover:text-blue-300"
-          >
+          <Link to="/login" className="font-medium text-blue-400 hover:text-blue-300">
             Sign in
           </Link>
         </div>
