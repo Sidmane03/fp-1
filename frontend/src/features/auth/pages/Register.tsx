@@ -3,6 +3,7 @@ import { useNavigate, Link, Navigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { useAuth } from "../state/AuthContext";
 import { useOnboarding } from "../../onboarding/state/OnboardingContext";
+import { Button, Input } from "../../../components/ui";
 
 // Define the shape of our form data for TypeScript
 type FormValues = {
@@ -13,7 +14,6 @@ type FormValues = {
 
 export default function Register() {
   const { data, planRevealed } = useOnboarding();
-  // Alias register to authRegister to prevent naming collision with react-hook-form
   const { register: authRegister } = useAuth(); 
   const navigate = useNavigate();
   const [authError, setAuthError] = useState("");
@@ -30,14 +30,13 @@ export default function Register() {
     return <Navigate to="/onboarding/gender" replace />;
   }
 
-  // RHF passes the validated data to this function
   const onSubmit = async (formData: FormValues) => {
     setAuthError("");
     setLoading(true);
 
     try {
       await authRegister({
-        ...formData, // Spread the validated name, email, and password
+        ...formData,
         gender: data.gender,
         age: Number(data.age),
         height: Number(data.height),
@@ -61,11 +60,11 @@ export default function Register() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-950 p-4">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-[#F8F7F3]">
       <div className="w-full max-w-md space-y-8">
         <div className="text-center">
-          <h1 className="text-3xl font-bold text-white">Create your account</h1>
-          <p className="mt-2 text-gray-400">To save your personalized plan</p>
+          <h1 className="text-3xl font-bold text-[#1A1A1A]">Create your account</h1>
+          <p className="mt-2 text-gray-500">To save your personalized plan</p>
         </div>
 
         {authError && (
@@ -74,51 +73,42 @@ export default function Register() {
           </div>
         )}
 
-        {/* Use RHF's handleSubmit to wrap your custom onSubmit */}
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div>
             <label htmlFor="name" className="sr-only">Full Name</label>
-            <input
+            <Input
               id="name"
               type="text"
               placeholder="Full Name"
-              className={`w-full p-3 rounded-xl bg-gray-900 border-2 text-white placeholder-gray-500 focus:outline-none ${
-                errors.name ? "border-red-500" : "border-gray-700 focus:border-blue-500"
-              }`}
+              error={errors.name?.message}
               {...register("name", { required: "Name is required" })}
             />
-            {errors.name && <p className="mt-1 text-sm text-red-400">{errors.name.message}</p>}
           </div>
 
           <div>
             <label htmlFor="email" className="sr-only">Email address</label>
-            <input
+            <Input
               id="email"
               type="email"
               placeholder="Email address"
-              className={`w-full p-3 rounded-xl bg-gray-900 border-2 text-white placeholder-gray-500 focus:outline-none ${
-                errors.email ? "border-red-500" : "border-gray-700 focus:border-blue-500"
-              }`}
+              error={errors.email?.message}
               {...register("email", { 
                 required: "Email is required",
                 pattern: {
                   value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                  message: "Please enter a valid email address (e.g., name@example.com)"
+                  message: "Please enter a valid email address"
                 }
               })}
             />
-            {errors.email && <p className="mt-1 text-sm text-red-400">{errors.email.message}</p>}
           </div>
 
           <div>
             <label htmlFor="password" className="sr-only">Password</label>
-            <input
+            <Input
               id="password"
               type="password"
               placeholder="Password (min 6 characters)"
-              className={`w-full p-3 rounded-xl bg-gray-900 border-2 text-white placeholder-gray-500 focus:outline-none ${
-                errors.password ? "border-red-500" : "border-gray-700 focus:border-blue-500"
-              }`}
+              error={errors.password?.message}
               {...register("password", { 
                 required: "Password is required",
                 minLength: {
@@ -127,21 +117,16 @@ export default function Register() {
                 }
               })}
             />
-            {errors.password && <p className="mt-1 text-sm text-red-400">{errors.password.message}</p>}
           </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full py-3 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {loading ? "Creating Account..." : "Complete Registration"}
-          </button>
+          <Button type="submit" isLoading={loading}>
+            Complete Registration
+          </Button>
         </form>
 
         <div className="text-center text-sm">
           <span className="text-gray-500">Already have an account? </span>
-          <Link to="/login" className="font-medium text-blue-400 hover:text-blue-300">
+          <Link to="/login" className="font-medium text-blue-500 hover:text-blue-400">
             Sign in
           </Link>
         </div>

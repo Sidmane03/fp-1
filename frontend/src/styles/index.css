@@ -27,3 +27,15 @@ body {
   min-width: 320px;
   min-height: 100vh;
 }
+
+/* Dashboard inline-input reveal animation */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

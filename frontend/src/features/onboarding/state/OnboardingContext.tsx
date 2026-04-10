@@ -28,7 +28,7 @@ const STORAGE_KEY = "fp_onboarding";
 // Rehydrate from sessionStorage if available
 const loadSavedData = (): OnboardingData => {
   try {
-    const saved = sessionStorage.getItem(STORAGE_KEY);
+    const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
       const parsed = JSON.parse(saved);
       return { ...initialData, ...parsed };
@@ -48,9 +48,9 @@ export const OnboardingProvider = ({ children }: { children: ReactNode }) => {
   const [planPreview, setPlanPreview] = useState<PlanPreview | null>(null);
   const [planRevealed, setPlanRevealed] = useState(false);
 
-  // Persist onboarding data to sessionStorage on every change
+  // Persist onboarding data to localStorage on every change
   useEffect(() => {
-    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
   }, [data]);
 
   const updateData = (fields: Partial<OnboardingData>) => {
@@ -61,7 +61,7 @@ export const OnboardingProvider = ({ children }: { children: ReactNode }) => {
     setData(initialData);
     setPlanPreview(null);
     setPlanRevealed(false);
-    sessionStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(STORAGE_KEY);
   };
 
   return (

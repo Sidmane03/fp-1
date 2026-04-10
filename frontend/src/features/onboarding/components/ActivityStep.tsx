@@ -30,7 +30,7 @@ export default function ActivityStep() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center bg-[#F8F7F3] p-4 font-sans text-[#1A1A1A]">
+    <div className="min-h-screen flex flex-col items-center p-4 font-sans bg-[#F8F7F3] text-[#1A1A1A]">
       <div className="w-full max-w-md space-y-10 py-8 flex-1 flex flex-col">
         
         {/* Top Header & Segmented Progress Bar */}
@@ -38,7 +38,7 @@ export default function ActivityStep() {
           {/* Soft round Back Button */}
           <button 
             onClick={handleBack}
-            className="shrink-0 w-10 h-10 flex items-center justify-center rounded-full bg-white shadow-[0_2px_10px_rgb(0,0,0,0.04)] text-gray-500 hover:text-[#1A1A1A] transition-colors focus:outline-none focus:ring-2 focus:ring-[#FF5722]"
+            className="shrink-0 w-10 h-10 flex items-center justify-center rounded-full shadow-[0_2px_10_rgb(0,0,0,0.04)] transition-colors focus:outline-none focus:ring-2 focus:ring-[#FF5722] bg-white text-gray-500 hover:text-[#1A1A1A]"
             aria-label="Go back"
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -68,18 +68,18 @@ export default function ActivityStep() {
             <button
               key={option.value}
               onClick={() => handleSelect(option.value)}
-              className={`w-full flex items-center gap-4 p-5 rounded-[20px] transition-all outline-none focus:ring-4 focus:ring-[#FF5722]/20
+              className={`w-full flex items-center gap-4 p-5 rounded-[20px] transition-all outline-none focus:ring-4 focus:ring-[#FF5722]/20 border
                 ${
                   data.activityLevel === option.value
-                    ? "bg-[#FFF9F5] shadow-[0_8px_30px_rgb(255,87,34,0.12)] border border-[#FF5722]"
+                    ? "bg-[#FFF9F5] shadow-[0_8px_30px_rgb(255,87,34,0.12)] border-[#FF5722]"
                     : "bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-transparent hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)]"
                 }`}
             >
-              <div className="w-10 h-10 rounded-full bg-[#F8F7F3] flex items-center justify-center text-xl shrink-0">
+              <div className="w-10 h-10 rounded-full flex items-center justify-center text-xl shrink-0 bg-[#F8F7F3]">
                 {option.icon}
               </div>
               <div className="text-left flex-1">
-                <span className="text-lg font-bold font-serif text-[#1A1A1A] block">{option.label}</span>
+                <span className="text-lg font-bold font-serif block text-[#1A1A1A]">{option.label}</span>
                 <span className="text-sm font-medium text-gray-400">{option.desc}</span>
               </div>
             </button>

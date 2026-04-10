@@ -12,11 +12,14 @@ export const Input = ({ label, error, className = "", ...props }: InputProps) =>
       
       <input
         className={`
-          w-full p-3 rounded-xl bg-gray-900 border-2 
-          text-white placeholder-gray-500 focus:outline-none transition-colors
+          w-full p-3 rounded-xl border-2 
+          bg-white 
+          text-[#1A1A1A] 
+          placeholder-gray-300 
+          focus:outline-none transition-colors
           ${error 
             ? "border-red-500 focus:border-red-500" 
-            : "border-gray-700 focus:border-blue-500"
+            : "border-gray-100 focus:border-blue-500"
           }
           ${className}
         `}

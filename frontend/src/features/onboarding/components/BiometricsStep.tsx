@@ -28,7 +28,7 @@ export default function BiometricsStep() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#F8F7F3] p-4 font-sans text-[#1A1A1A]">
+    <div className="min-h-screen flex flex-col items-center p-4 font-sans bg-[#F8F7F3] text-[#1A1A1A]">
       <div className="w-full max-w-md space-y-10 py-8">
         
         {/* Top Header & Segmented Progress Bar */}
@@ -36,7 +36,7 @@ export default function BiometricsStep() {
           {/* Soft round Back Button */}
           <button 
             onClick={() => navigate("/onboarding/gender")}
-            className="flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-full bg-white shadow-[0_2px_10px_rgb(0,0,0,0.04)] text-gray-500 hover:text-[#1A1A1A] transition-colors focus:outline-none focus:ring-2 focus:ring-[#FF5722]"
+            className="flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-full shadow-[0_2px_10px_rgb(0,0,0,0.04)] transition-colors focus:outline-none focus:ring-2 focus:ring-[#FF5722] bg-white text-gray-500 hover:text-[#1A1A1A]"
             aria-label="Go back"
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -64,30 +64,30 @@ export default function BiometricsStep() {
         {/* Floating Input Cards */}
         <div className="space-y-4 px-2">
           {/* Age Input Card */}
-          <div className="bg-white p-5 rounded-[20px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100/50">
-            <label htmlFor="age" className="block text-sm font-bold text-[#1A1A1A] mb-2">Age</label>
+          <div className="p-5 rounded-[20px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border transition-all bg-white border-gray-100/50">
+            <label htmlFor="age" className="block text-sm font-bold mb-2 text-[#1A1A1A]">Age</label>
             <input
               id="age"
               type="number"
               value={data.age}
               onChange={(e) => updateData({ age: e.target.value })}
               placeholder="e.g. 25"
-              className="w-full py-3 px-4 rounded-xl bg-[#F8F7F3] border border-transparent text-[#1A1A1A] placeholder-gray-400 font-bold focus:bg-white focus:border-[#FF5722] focus:ring-4 focus:ring-[#FF5722]/10 transition-all outline-none"
+              className="w-full py-3 px-4 rounded-xl border border-transparent placeholder-gray-400 font-bold focus:bg-white focus:border-[#FF5722] focus:ring-4 focus:ring-[#FF5722]/10 transition-all outline-none bg-[#F8F7F3] text-[#1A1A1A]"
             />
             {errors.age && <p className="mt-2 text-sm font-medium text-red-500">{errors.age}</p>}
           </div>
 
           {/* Height Input Card */}
-          <div className="bg-white p-5 rounded-[20px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100/50 flex items-center justify-between gap-4">
+          <div className="p-5 rounded-[20px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border transition-all flex items-center justify-between gap-4 bg-white border-gray-100/50">
             <div className="flex-1">
-              <label htmlFor="height" className="block text-sm font-bold text-[#1A1A1A] mb-2">Height</label>
+              <label htmlFor="height" className="block text-sm font-bold mb-2 text-[#1A1A1A]">Height</label>
               <input
                 id="height"
                 type="number"
                 value={data.height}
                 onChange={(e) => updateData({ height: e.target.value })}
                 placeholder="e.g. 175"
-                className="w-full py-3 px-4 rounded-xl bg-[#F8F7F3] border border-transparent text-[#1A1A1A] placeholder-gray-400 font-bold focus:bg-white focus:border-[#FF5722] focus:ring-4 focus:ring-[#FF5722]/10 transition-all outline-none"
+                className="w-full py-3 px-4 rounded-xl border border-transparent placeholder-gray-400 font-bold focus:bg-white focus:border-[#FF5722] focus:ring-4 focus:ring-[#FF5722]/10 transition-all outline-none bg-[#F8F7F3] text-[#1A1A1A]"
               />
               {errors.height && <p className="mt-2 text-sm font-medium text-red-500">{errors.height}</p>}
             </div>
@@ -95,16 +95,16 @@ export default function BiometricsStep() {
           </div>
 
           {/* Weight Input Card */}
-          <div className="bg-white p-5 rounded-[20px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100/50 flex items-center justify-between gap-4">
+          <div className="p-5 rounded-[20px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border transition-all flex items-center justify-between gap-4 bg-white border-gray-100/50">
             <div className="flex-1">
-              <label htmlFor="weight" className="block text-sm font-bold text-[#1A1A1A] mb-2">Weight</label>
+              <label htmlFor="weight" className="block text-sm font-bold mb-2 text-[#1A1A1A]">Weight</label>
               <input
                 id="weight"
                 type="number"
                 value={data.weight}
                 onChange={(e) => updateData({ weight: e.target.value })}
                 placeholder="e.g. 70"
-                className="w-full py-3 px-4 rounded-xl bg-[#F8F7F3] border border-transparent text-[#1A1A1A] placeholder-gray-400 font-bold focus:bg-white focus:border-[#FF5722] focus:ring-4 focus:ring-[#FF5722]/10 transition-all outline-none"
+                className="w-full py-3 px-4 rounded-xl border border-transparent placeholder-gray-400 font-bold focus:bg-white focus:border-[#FF5722] focus:ring-4 focus:ring-[#FF5722]/10 transition-all outline-none bg-[#F8F7F3] text-[#1A1A1A]"
               />
               {errors.weight && <p className="mt-2 text-sm font-medium text-red-500">{errors.weight}</p>}
             </div>

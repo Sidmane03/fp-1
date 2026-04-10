@@ -21,8 +21,8 @@ export const Button = ({
   const variants = {
     primary: "bg-blue-600 text-white hover:bg-blue-700",
     secondary: "bg-gray-700 text-white hover:bg-gray-600",
-    outline: "border-2 border-gray-700 text-gray-300 hover:border-gray-500",
-    ghost: "text-blue-400 hover:text-blue-300 bg-transparent"
+    outline: "border-2 border-gray-200 text-gray-600 hover:border-gray-400",
+    ghost: "text-blue-600 hover:text-blue-700 bg-transparent"
   };
 
   return (

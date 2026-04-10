@@ -105,7 +105,7 @@ export default function PaceStep() {
     !!targetWeightError;
 
   return (
-    <div className="min-h-screen flex flex-col items-center bg-[#F8F7F3] p-4 font-sans text-[#1A1A1A]">
+    <div className="min-h-screen flex flex-col items-center p-4 font-sans bg-[#F8F7F3] text-[#1A1A1A]">
       <div className="w-full max-w-md space-y-10 py-8 flex-1 flex flex-col">
         
         {/* Top Header & Segmented Progress Bar */}
@@ -113,7 +113,7 @@ export default function PaceStep() {
           {/* Soft round Back Button */}
           <button 
             onClick={() => navigate("/onboarding/goal")}
-            className="shrink-0 w-10 h-10 flex items-center justify-center rounded-full bg-white shadow-[0_2px_10px_rgb(0,0,0,0.04)] text-gray-500 hover:text-[#1A1A1A] transition-colors focus:outline-none focus:ring-2 focus:ring-[#FF5722]"
+            className="shrink-0 w-10 h-10 flex items-center justify-center rounded-full shadow-[0_2px_10px_rgb(0,0,0,0.04)] transition-colors focus:outline-none focus:ring-2 focus:ring-[#FF5722] bg-white text-gray-500 hover:text-[#1A1A1A]"
             aria-label="Go back"
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -147,11 +147,11 @@ export default function PaceStep() {
 
         <div className="space-y-6 px-2">
           {/* Target Weight Input Card */}
-          <div className="bg-white rounded-[20px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-6 transition-shadow focus-within:shadow-[0_8px_30px_rgb(255,87,34,0.12)] border border-transparent focus-within:border-[#FF5722]/30">
-            <label className="block text-sm font-bold text-[#1A1A1A] mb-3">
+          <div className="rounded-[20px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-6 transition-all border bg-white border-transparent focus-within:border-[#FF5722]/30 focus-within:shadow-[0_8px_30px_rgb(255,87,34,0.12)]">
+            <label className="block text-sm font-bold mb-3 text-[#1A1A1A]">
               {goal === "lose_weight" ? "Target weight" : "Target reach weight"}
             </label>
-            <div className="flex items-center gap-3 bg-[#F8F7F3] rounded-[16px] p-3 px-4 focus-within:ring-2 focus-within:ring-[#FF5722] transition-shadow">
+            <div className="flex items-center gap-3 rounded-[16px] p-3 px-4 focus-within:ring-2 focus-within:ring-[#FF5722] transition-shadow bg-[#F8F7F3]">
               <input
                 type="number"
                 value={data.targetWeight}
@@ -164,7 +164,7 @@ export default function PaceStep() {
                   }
                 }}
                 placeholder={goal === "lose_weight" ? "e.g. 65" : "e.g. 80"}
-                className="w-full bg-transparent text-[#1A1A1A] font-medium text-lg placeholder-gray-400 focus:outline-none"
+                className="w-full bg-transparent font-medium text-lg placeholder-gray-400 focus:outline-none text-[#1A1A1A]"
               />
               <span className="text-gray-400 font-medium">kg</span>
             </div>
@@ -178,7 +178,7 @@ export default function PaceStep() {
             <div className="space-y-6">
               
               {/* Rate Card */}
-              <div className="bg-white rounded-[20px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-6 border border-transparent">
+              <div className="rounded-[20px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-6 border transition-all bg-white border-transparent">
                 
                 {/* Zone Labels */}
                 <div className="flex justify-between text-xs font-bold px-1 mb-4 uppercase tracking-wider">
@@ -228,7 +228,7 @@ export default function PaceStep() {
 
                 {/* Warning for fast zone */}
                 {zone === "aggressive" && (
-                  <div className="mt-6 rounded-2xl bg-red-50 p-4 text-sm font-medium text-red-600 flex items-start gap-3 border border-red-100">
+                  <div className="mt-6 rounded-2xl p-4 text-sm font-medium flex items-start gap-3 border transition-colors bg-red-50 text-red-600 border-red-100">
                     <span className="text-lg">⚠️</span>
                     <span>
                       {goal === "lose_weight"
@@ -239,7 +239,7 @@ export default function PaceStep() {
                 )}
 
                 {zone === "fast" && (
-                  <div className="mt-6 rounded-2xl bg-orange-50 p-4 text-sm font-medium text-orange-600 flex items-start gap-3 border border-orange-100">
+                  <div className="mt-6 rounded-2xl p-4 text-sm font-medium flex items-start gap-3 border transition-colors bg-orange-50 text-orange-600 border-orange-100">
                     <span className="text-lg">⚡</span>
                     <span>Ambitious but doable with high discipline.</span>
                   </div>
@@ -247,26 +247,26 @@ export default function PaceStep() {
               </div>
 
               {/* Weeks Input Card */}
-              <div className="bg-white rounded-[20px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-6 border border-transparent focus-within:shadow-[0_8px_30px_rgb(255,87,34,0.12)] focus-within:border-[#FF5722]/30 transition-shadow">
+              <div className="rounded-[20px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-6 border transition-all bg-white border-transparent focus-within:shadow-[0_8px_30px_rgb(255,87,34,0.12)] focus-within:border-[#FF5722]/30">
                 <div className="flex items-center justify-between mb-4">
                   <label className="text-sm font-bold text-[#1A1A1A]">
                     Estimated timeline
                   </label>
-                  <div className="flex items-center gap-2 bg-[#F8F7F3] rounded-[12px] p-2 focus-within:ring-2 focus-within:ring-[#FF5722] transition-shadow">
+                  <div className="flex items-center gap-2 rounded-[12px] p-2 focus-within:ring-2 focus-within:ring-[#FF5722] transition-shadow bg-[#F8F7F3]">
                     <input
                       type="number"
                       min="1"
                       max="104"
                       value={data.timeframeWeeks}
                       onChange={(e) => handleWeeksChange(e.target.value)}
-                      className="w-16 bg-transparent text-[#1A1A1A] font-bold text-center focus:outline-none"
+                      className="w-16 bg-transparent font-bold text-center focus:outline-none text-[#1A1A1A]"
                     />
                     <span className="text-gray-400 text-sm font-medium pr-2">weeks</span>
                   </div>
                 </div>
 
                 {calculatedWeeks > 0 && (
-                  <div className="bg-[#FFF9F5] rounded-xl p-3 text-center border border-[#FF5722]/10">
+                  <div className="rounded-xl p-3 text-center border transition-colors bg-[#FFF9F5] border-[#FF5722]/10">
                     <p className="text-[#FF5722] font-semibold">
                       Goal reached in: {formatDuration(calculatedWeeks)}
                     </p>
