@@ -26,7 +26,7 @@ api.interceptors.request.use((config) => {
 // Optional: normalize errors
 api.interceptors.response.use(
 	(res) => res,
-	(error: AxiosError<any>) => {
+	(error: AxiosError<{ message?: string }>) => {
 		const message =
 			error.response?.data?.message ||
 			error.message ||

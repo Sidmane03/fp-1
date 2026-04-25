@@ -26,8 +26,12 @@ export default function PlanReveal() {
         const plan = await onboardingApi.calculatePlan(data);
         setPlanPreview(plan);
         setPlanRevealed(true);
-      } catch (err: any) {
-        setError(err.message || "Failed to calculate plan");
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          setError(err.message || "Failed to calculate plan");
+        } else {
+          setError("Failed to calculate plan");
+        }
       } finally {
         setLoading(false);
       }
@@ -36,7 +40,7 @@ export default function PlanReveal() {
     if (!planPreview) {
       fetchPlan();
     }
-  }, []);
+  }, [data, navigate, planPreview, setPlanPreview, setPlanRevealed]);
 
   const handleCreateAccount = () => {
     navigate("/register");

@@ -81,6 +81,7 @@ export const OnboardingProvider = ({ children }: { children: ReactNode }) => {
   );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useOnboarding = () => {
   const context = useContext(OnboardingContext);
   if (!context)
