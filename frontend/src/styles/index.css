@@ -1,6 +1,6 @@
-@import "tailwindcss";
-
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;500;600;700&family=Fraunces:opsz,wght@9..144,400;600;700&display=swap');
+
+@import "tailwindcss";
 
 :root {
   font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
@@ -8,8 +8,10 @@
   font-weight: 400;
 
   color-scheme: light;
-  color: #1A1A1A; /* Deep Charcoal */
-  background-color: #F8F7F3; /* Creamy off-white */
+  color: #1A1A1A;
+  /* Deep Charcoal */
+  background-color: #F8F7F3;
+  /* Creamy off-white */
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -18,7 +20,13 @@
 }
 
 /* Explicit heading overrides for the editorial serif look */
-h1, h2, h3, h4, h5, h6, .font-serif {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.font-serif {
   font-family: 'Fraunces', serif;
 }
 
@@ -34,6 +42,7 @@ body {
     opacity: 0;
     transform: translateY(8px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);

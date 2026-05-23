@@ -1,4 +1,3 @@
-import React from "react";
 import type { UserProfile, WeightLog } from "../types/dashboard.types";
 
 interface ProgressTabProps {
@@ -34,13 +33,13 @@ export function ProgressTab({
   onLogWeight,
   onCancelWeightInput,
 }: ProgressTabProps) {
-  
+
   const textTitle = theme === "light" ? "text-[#1A1A1A]" : "text-white";
   const textDim = theme === "light" ? "text-gray-400" : "text-gray-500";
   const bgDim = theme === "light" ? "bg-[#F8F7F3]" : "bg-gray-800/30";
   const borderDim = theme === "light" ? "border-gray-100" : "border-gray-800/50";
-  const cardBase = theme === "light" 
-    ? "bg-white rounded-[32px] p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)]" 
+  const cardBase = theme === "light"
+    ? "bg-white rounded-[32px] p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)]"
     : "bg-gray-900 rounded-[28px] p-6 shadow-2xl border border-gray-800";
 
   const targetWeight = profile.targetWeight ?? profile.weight;
@@ -89,11 +88,10 @@ export function ProgressTab({
             {isCheckInDay && !weekWeight ? (
               <button
                 onClick={onShowWeightInput}
-                className={`w-full py-4 rounded-2xl border-2 border-dashed text-sm font-bold transition-all mb-4 ${
-                  theme === "light" 
-                    ? "bg-gray-50/50 border-gray-200 text-[#1A1A1A] hover:border-blue-400 hover:text-blue-500" 
+                className={`w-full py-4 rounded-2xl border-2 border-dashed text-sm font-bold transition-all mb-4 ${theme === "light"
+                    ? "bg-gray-50/50 border-gray-200 text-[#1A1A1A] hover:border-blue-400 hover:text-blue-500"
                     : "bg-gray-800/50 border-gray-700 text-blue-400 hover:border-blue-500/50 hover:bg-gray-800"
-                }`}
+                  }`}
               >
                 ⚖️ Log This Week's Weight
               </button>
@@ -130,15 +128,13 @@ export function ProgressTab({
               onKeyDown={(e) => e.key === "Enter" && onLogWeight()}
               placeholder="Weight in kg..."
               autoFocus
-              className={`flex-1 px-5 py-3 rounded-2xl border font-bold focus:outline-none focus:ring-2 focus:ring-blue-500/30 transition-all ${
-                theme === "light" ? "bg-gray-50 border-gray-100 text-[#1A1A1A]" : "bg-gray-800 border-gray-700 text-white"
-              }`}
+              className={`flex-1 px-5 py-3 rounded-2xl border font-bold focus:outline-none focus:ring-2 focus:ring-blue-500/30 transition-all ${theme === "light" ? "bg-gray-50 border-gray-100 text-[#1A1A1A]" : "bg-gray-800 border-gray-700 text-white"
+                }`}
             />
             <button
               onClick={onLogWeight}
-              className={`w-11 h-11 rounded-2xl text-white shadow-lg flex items-center justify-center hover:scale-105 active:scale-95 transition-transform ${
-                theme === "light" ? "bg-[#3B82F6]" : "bg-blue-600"
-              }`}
+              className={`w-11 h-11 rounded-2xl text-white shadow-lg flex items-center justify-center hover:scale-105 active:scale-95 transition-transform ${theme === "light" ? "bg-[#3B82F6]" : "bg-blue-600"
+                }`}
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                 <polyline points="20 6 9 17 4 12" />
@@ -163,11 +159,10 @@ export function ProgressTab({
               {Array.from({ length: 7 }).map((_, i) => (
                 <div
                   key={i}
-                  className={`w-3.5 h-3.5 rounded-full transition-all duration-500 ${
-                    i < adherence 
-                      ? "bg-[#4ADE80] shadow-[0_0_10px_rgba(74,222,128,0.3)]" 
+                  className={`w-3.5 h-3.5 rounded-full transition-all duration-500 ${i < adherence
+                      ? "bg-[#4ADE80] shadow-[0_0_10px_rgba(74,222,128,0.3)]"
                       : (theme === "light" ? "bg-gray-200" : "bg-gray-700")
-                  }`}
+                    }`}
                 />
               ))}
             </div>

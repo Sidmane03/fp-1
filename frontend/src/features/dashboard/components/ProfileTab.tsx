@@ -1,4 +1,3 @@
-import React from "react";
 import type { UserProfile } from "../types/dashboard.types";
 import { seedDevData } from "../utils/featureEngineering";
 
@@ -58,9 +57,8 @@ export function ProfileTab({
         </button>
 
         <div
-          className={`transition-all duration-400 ease-out overflow-hidden ${
-            planExpanded ? "max-h-[800px] opacity-100" : "max-h-0 opacity-0"
-          }`}
+          className={`transition-all duration-400 ease-out overflow-hidden ${planExpanded ? "max-h-[800px] opacity-100" : "max-h-0 opacity-0"
+            }`}
         >
           <div className="px-6 pb-6 space-y-5">
             {/* BMR / TDEE */}
@@ -111,9 +109,9 @@ export function ProfileTab({
                   <span className={`text-lg font-bold font-serif ${textTitle}`}>{profile.weight} kg</span>
                 </div>
                 <div className="flex items-center text-gray-300 dark:text-gray-600 px-3">
-                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="m9 18 6-6-6-6" />
-                   </svg>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="m9 18 6-6-6-6" />
+                  </svg>
                 </div>
                 <div className="text-center flex-1">
                   <span className="text-[10px] font-bold text-blue-400 uppercase tracking-wider block mb-1">Target</span>
@@ -127,11 +125,10 @@ export function ProfileTab({
 
       <button
         onClick={onLogout}
-        className={`w-full py-4 mt-4 rounded-2xl font-bold text-sm transition-all active:scale-95 border ${
-          theme === "light" 
-            ? "bg-white border-gray-100 text-gray-500 hover:text-red-500 hover:border-red-50" 
+        className={`w-full py-4 mt-4 rounded-2xl font-bold text-sm transition-all active:scale-95 border ${theme === "light"
+            ? "bg-white border-gray-100 text-gray-500 hover:text-red-500 hover:border-red-50"
             : "bg-gray-900 border-gray-800 text-gray-400 hover:text-red-500 hover:border-red-900/50 hover:bg-red-950/20"
-        }`}
+          }`}
       >
         Logout
       </button>
